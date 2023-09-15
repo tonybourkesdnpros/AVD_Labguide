@@ -1,6 +1,6 @@
 # Connect to Outside Network
 
-In this lab, host4 will be configured as if it were an external router (we'll call it "R1"), and will accept routes from the fabric as well as 
+In this lab, host4 will be configured as if it were an external router (we'll call it "R1"), and will accept routes from the fabric as well as announce routes into 
 
 
 Log into host4 and configure it as a router. 
@@ -100,7 +100,7 @@ Gateway of last resort is not set
 Log into host1 and try to ping 172.16.0.1 (the IP address of VLAN 1000 on R1): 
 
 <pre>
-➜  project ssh host1
+➜  project <b><span style="color:red;">ssh host1</span></b>
 Last login: Sun Sep 10 12:52:53 2023 from 192.168.0.1
 host1#ping 172.16.0.1
 PING 172.16.0.1 (172.16.0.1) 72(100) bytes of data.
