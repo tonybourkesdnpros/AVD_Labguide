@@ -1,9 +1,102 @@
 # Connect to Outside Network
 
-In this lab, host4 will be configured as if it were an external router (we'll call it "R1"), and will accept routes from the fabric as well as announce routes into 
+In this lab, host4 will be configured as if it were an external router (we'll call it "R1"), and will exchange routes to and from the fabric. 
+
+<img src=lab5-images/R1_endstate.png width="50%" height="50%" border=1>
 
 
-Log into host4 and configure it as a router. 
+## Configure the Fabric to Peer with R1
+
+Open the file under group_vars called EVPN_SERVICES.yml. Under the Tenant "ACME" and VRF "VRF_A", add the following lines after the last line in the file: 
+
+<pre>
+        l3_interfaces:
+          - interfaces: [Ethernet9]
+            ip_addresses: [10.1.5.1/24]
+            nodes: [leaf4]
+            enabled: True 
+        bgp_peers:
+          - ip_address: 10.1.5.254
+            remote_as: 1
+            nodes: [leaf4]
+</pre>
+
+The file EVPN_SERVICES.yml should look like this when complete: 
+
+<pre>
+---
+tenants:
+  - name: ACME
+    mac_vrf_vni_base: 10000
+    vrfs:
+      - name: VRF_A
+        vrf_vni: 10
+        svis:
+          - id: 10
+            # SVI Description
+            name: DMZ
+            enabled: true
+            ip_address_virtual: 10.1.10.1/24
+          - id: 20
+            name: Internal
+            enabled: true
+            ip_address_virtual: 10.1.20.1/24
+        l3_interfaces:
+          - interfaces: [Ethernet9]
+            ip_addresses: [10.1.5.1/24]
+            nodes: [leaf4]
+            enabled: True 
+        bgp_peers:
+          - ip_address: 10.1.5.254
+            remote_as: 1
+            nodes: [leaf4]
+</pre>
+
+Because the data model changed, run the build_config.yml playbook, and then the deploy_config.yml playbook. 
+
+<pre>
+AVD_L3LS git:(main) ✗ <b><span style="color:red;">ansible-playbook playbooks/build_fabric.yml</span></b>
+...
+PLAY RECAP *****************************************************************************************************************************************
+leaf1                      : ok=3    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+leaf2                      : ok=3    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+leaf3                      : ok=3    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+leaf4                      : ok=3    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+spine1                     : ok=11   changed=7    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+spine2                     : ok=3    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+spine3                     : ok=3    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+spine4                     : ok=3    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+</pre>
+
+Then run the deploy_fabric.yml playbook. 
+
+<pre>
+AVD_L3LS git:(L3v2) ✗  <b><span style="color:red;">ansible-playbook playbooks/deploy_fabric.yml</b></span>
+
+PLAY [Deploy fabric to CVP] *******************************************************************************************************
+...
+PLAY RECAP ************************************************************************************************************************
+cvp1                       : ok=11   changed=2    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+</pre>
+
+Run any change controls needed to push the change to the devices. 
+
+After the change controls are complete, log into leaf4 to verify that the configuration change was completed correctly. Run the command <tt>show ip bgp summary vrf VRF_A</tt>
+
+<pre>
+leaf4#<b><span style="color:red;">show ip bgp summary vrf VRF_A</b></span>
+BGP summary information for VRF VRF_A
+Router identifier 192.168.101.4, local AS number 65103
+Neighbor Status Codes: m - Under maintenance
+  Neighbor   V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
+  10.1.5.254 4 1                  0         0    0    0 00:02:18 <b>Active</b>
+</pre>
+
+You should see a single session in the "Active" state. It will stay in this state until "R1" is configured to peer. 
+
+## Configure "R1"
+
+Log into host4 and configure it as a router. Paste the following configuration (while in config mode):
 
 <pre>
 hostname R1
@@ -28,6 +121,8 @@ router bgp 1
       network 172.16.0.0/12
 </pre>
 
+
+
 Once this is complete, check to see if R1 is peering with leaf4. 
 
 <pre>
@@ -36,7 +131,7 @@ BGP summary information for VRF default
 Router identifier 9.9.9.9, local AS number 1
 Neighbor Status Codes: m - Under maintenance
   Neighbor V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
-  10.1.5.1 4 65299             26        32    0    0 00:09:21 Estab   5      5
+  10.1.5.1 4 65299             26        32    0    0 00:09:21 <b>Estab</b>   5      5
 </pre>
 
 Check to see if R1 has received the routes from the EVPN fabric. 
