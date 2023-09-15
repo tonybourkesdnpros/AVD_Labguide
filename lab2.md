@@ -209,7 +209,7 @@ Under Provisioning and Tasks, select all the tasks by clicking the button at the
 
 <img src=lab2-images/3.png border=1>
 
-Change the arrangement to "Parallel", and click "Create Change Control with 6 Tasks"
+Change the arrangement to "Parallel", and click "Create Change Control with 7 Tasks"
 
 <img src=lab2-images/7.png border=1>
 
@@ -240,13 +240,11 @@ When it's completed, you'll see green checks for each device, and the status wil
 From the command line, SSH into leaf1 with the command <tt>ssh arista@leaf1</tt>. You should be allowed in without a password prompt (the switches have an SSH key installed).
 
 <pre>
- ➜  AVD_L3LS git:(main) ssh leaf1
+ ➜  AVD_L3LS git:(main) <span style="color:red;"><b>ssh leaf1</b></span>
 Last login: Sat Aug 26 13:19:53 2023 from 192.168.0.1
-leaf1#
 </pre>
 
 Run the command <tt>show ip bgp summary</tt> to see if the underlay has been configured. You should see four "Estab" sessions: Three to the spines, and one to leaf2. 
-
 
 <pre> 
 leaf1#<span style="color:red;">show ip bgp summary</span>
@@ -278,7 +276,7 @@ Neighbor Status Codes: m - Under maintenance
 
 Log into host1 (You can open a new terminal session with the "+" button on the upper right).
 
-<img src=lab3-images/13.png border=1>
+<img src=lab2-images/12.png border=1>
 
 Configure host1's Ethernet1 and Ethernet2 into a Layer 3 port channel with the IP address of 10.1.10.11/24 and default gateway of 10.1.10.1. 
 <pre>

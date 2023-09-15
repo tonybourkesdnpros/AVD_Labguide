@@ -1,17 +1,17 @@
 # Add Second Network and Second Host
 
-In this lab, you will edit the data models to add a new host (host2) and a new network (VLAN 20). 
+In this lab, you will edit the data models to add a new host (host3) and a new network (VLAN 20). 
 
-Host2's Ethernet1 and Ethernet2 are connected to leaf1 and leaf2 on Ethernet9. 
+Host3's Ethernet1 and Ethernet2 are connected to leaf3 and leaf4 on Ethernet7. 
 
-<img src=lab3-images/host2.png border=1>
+<img src=lab3-images/host3.png border=1>
 
 
 ## Edit EVPN Services Data Model
 
-The file <tt>EVPN_SERVICE.yml</tt> is responsible for the Tenant, VRF, VLANs, anycast gateway, etc., configurations. These are the network services that are provided to the endpoint. 
+The file <tt>EVPN_SERVICES.yml</tt> is responsible for the Tenant, VRF, VLANs, anycast gateway, etc., configurations. These are the network services that are provided to the endpoint. 
 
-Open EVPN_SERVICE.yml, which can be found in the group_vars directory. 
+Open EVPN_SERVICES.yml, which can be found in the group_vars directory. 
 
 <img src=lab3-images/1.png border=1>
 
@@ -101,10 +101,10 @@ servers:
 
 ## Build the Config
 
-Now it's time to build the configuration again. Run the build_fabric playbook.
+Now it's time to build the configuration again. Run the <tt>build_fabric.yml</tt> playbook.
 
 <pre>
-➜  AVD_L3LS git:(main) ✗ ansible-playbook playbooks/build_fabric.yml 
+➜  AVD_L3LS git:(main) ✗ <b><span style="color:red;">ansible-playbook playbooks/build_fabric.yml</span></b>
 
 
 PLAY RECAP ********************************************************************************************************
@@ -135,34 +135,30 @@ PLAY RECAP *********************************************************************
 cvp1                       : ok=10   changed=1    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0     
 </pre>
 
-Check with CloudVision, there should be 
+Check with CloudVision, there should be tasks to be performed. Run all the tasks through a change control before moving onto the next steps. 
 
+## Configure Host3
 
-## Configure Host2
-
-Log into host2. 
-
-<pre>
-➜  project ssh host2
-host2#conf
-host2(config)#int e1-2
-host2(config-if-Et1-2)#channel-group 1 mode active 
-host2(config-if-Et1-2)#int po1
-host2(config-if-Po1)#no switchport 
-host2(config-if-Po1)#ip address 10.1.20.12/24
-host2(config-if-Po1)#ip route 0.0.0.0/0 10.1.20.1
-</pre>
-
-Save the config. 
+Log into host3 and paste the following configuration while in config mode. 
 
 <pre>
-host2(config)#wr
+int e1-2
+   channel-group 1 mode active
+int po1
+   no switchport
+   ip address 10.1.20.12/24
+ip route 0/0 10.1.20.1
+</pre> 
+
+<pre>
+host3(config)#wr
 Copy completed successfully.
 </pre>
 
-Test 
+Test ping the default gateway. 
+
 <pre>
-host2(config)#ping 10.1.20.1
+host3(config)#ping 10.1.20.1
 PING 10.1.20.1 (10.1.20.1) 72(100) bytes of data.
 80 bytes from 10.1.20.1: icmp_seq=1 ttl=64 time=2.37 ms
 80 bytes from 10.1.20.1: icmp_seq=2 ttl=64 time=1.14 ms
