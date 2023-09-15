@@ -8,23 +8,26 @@ In this lab, you will create an L3LS+EVPN/VXLAN configuration with just a few fi
 
 ## Prepare Data Models
 
-Select the AVD_Labs directory. You'll see a directory called AVD_L3LS, Ansible_CVP, Ansible_EOS, and AVD_L3LS_MultiDC. Plus a few other administrative files (LICENSE, README.md, etc.)
+Select the AVD_Labs directory. You'll see several directories including a directory called AVD_L3LS. Select that directory in the IDE. 
 
 <img src=lab2-images/1.png border=1>
 
-From there, select the AVD_L3LS directory. 
-
 You'll see a few directories and files:
 
+* documentation
 * group_vars
+* intended
 * playbooks
+* reports
+* reset
 * ansible.cfg
 * inventory.yml
 
+And perhaps a few more. 
+
 <img src=lab2-images/2.png border=1>
 
-
-Group_vars will have the data models used to build the fabric configuration files. 
+The direcotry <tt>group_vars</tt> will have the data models used to build the fabric configuration files. 
 
 Playbooks will have the various playbooks being used (build, deploy, test).
 
@@ -47,7 +50,7 @@ There is the "all" group, which is all of the groups. "Children" signifies that 
 
 There is a group called <b>CVP_cluster</b> which is where you would put all of the CVP hosts. In the lab environment, there is only one CVP host, named cvp1. 
 
-Change the <tt>ansible_password</tt>: field (highlighted in red) to your environment's password. It will be "arista" followed by four alphanumeric characters. 
+Change the <tt>ansible_password</tt>: field (highlighted in red) to your environment's password if you haven't already done so. It will be "arista" followed by four alphanumeric characters. 
 
 <pre>
 ---
@@ -88,7 +91,7 @@ With AVD, there will be three playbooks used.
 
 The build_fabric.yml playbook is the first one we will use. It will both build configlets for the fabric, as well as create documentation for that build. 
 
-The build process will take the three data models. You'll find them in the group_vars directory: 
+The build process will take the three data models and run them through a templating system to generate configurations. You'll find the date models in the group_vars directory: 
 
 * FABRIC.yml: This file describes the overall fabric (for a single DC environment, this includes all the leafs and spines)
 * EVPN_SERVICES.yml: This file describes the VXLAN segments and anycast gateways to be created
@@ -102,7 +105,7 @@ After the change control process has been completed, then the test playbook will
 
 ### Build AVD Configuration
 
-Change directory to the AVD_L3LS directory. 
+Be sure to be in the directory AVD_L3LS. 
 
 <pre>
 ➜  project <span style="color:red;"><b>cd labfiles</b></span>
@@ -117,7 +120,7 @@ Verify you're in the directory of <tt>/home/coder/project/labfiles/AVD_Lab/AVD_L
 /home/coder/project/labfiles/AVD_Lab/AVD_L3LS
 </pre>
 
-Run the build_fabric.yml playbook. The output below has been truncated. 
+Run the build_fabric.yml playbook. (The output below has been truncated.)
 
 <pre>
   AVD_L3LS git:(main) ✗ <span style="color:red;"><b>ansible-playbook playbooks/build-fabric.yml</b></span>
@@ -188,7 +191,7 @@ cvp1                       : ok=10   changed=1    unreachable=0    failed=0    s
 ➜  AVD_L3LS git:(main) 
 </pre>
 
-This will create 7 tasks for the leafs and spines. 
+This will create tasks for the leafs and spines. 
 
 On the top bar, select "Provisioning", select "Tasks" on the left menu, and click on the "ID" check box to select all the tasks. 
 
@@ -204,7 +207,7 @@ The tasks represent a potential change in configuration reflecting the new confi
 
 Under Provisioning and Tasks, select all the tasks by clicking the button at the top, and then click "+ Create Change Control". 
 
-<img src=lab2-images/6.png border=1>
+<img src=lab2-images/3.png border=1>
 
 Change the arrangement to "Parallel", and click "Create Change Control with 6 Tasks"
 
