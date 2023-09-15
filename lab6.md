@@ -179,4 +179,52 @@ You should see in the intended/config directory the spine4.cfg file:
 Deploy the new config: 
 <pre>
 ➜  AVD_L3LS git:(main) ✗ <b><span style="color:red;">ansible-playbook playbooks/deploy_fabric.yml</b></span>
+...
+
+PLAY RECAP ************************************************************************************
+cvp1                       : ok=12   changed=5    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+</pre>
+
+Make sure to run any tasks through change control. 
+
+Log into leaf1 and run <tt>show ip bgp summary</tt>
+
+<pre>
+➜  AVD_L3LS git:(main) ✗ <b><span style="color:red;">ssh leaf1</b></span>
+Last login: Fri Sep 15 08:31:44 2023 from 192.168.0.1
+leaf1#<b><span style="color:red;">show ip bgp summary</span></b>
+BGP summary information for VRF default
+Router identifier 192.168.101.1, local AS number 65100
+Neighbor Status Codes: m - Under maintenance
+  Description              Neighbor      V AS           MsgRcvd   MsgSent  InQ OutQ  Up/Down State   PfxRcd PfxAcc
+  leaf2                    10.255.251.1  4 65100            277       267    0    0 03:41:06 Estab   9      9
+  spine1_Ethernet3         192.168.103.0 4 65001            273       271    0    0 03:41:09 Estab   4      4
+  spine2_Ethernet3         192.168.103.2 4 65001            271       271    0    0 03:41:06 Estab   4      4
+  spine3_Ethernet3         192.168.103.4 4 65001            269       273    0    0 03:41:09 Estab   4      4
+  <b><span style="color:purple;">spine4_Ethernet3</b><span>         192.168.103.6 4 65001             10        12    0    0 00:02:08 Estab   4      4
+</pre>
+
+You should see a new BGP session to spine4. 
+
+## Test Fabric with AVD
+
+Now run the test_fabric.yml playbook and generate a new fabric report. 
+
+<pre>
+➜  AVD_L3LS git:(main) ✗ <b><span style="color:red;">ansible-playbook playbooks/test_fabric.yml </pre></b>
+</pre>
+
+This will create the fabric report in the reports directory. Open it in preview. 
+
+<img src=lab6-images/8.png border=1>
+
+You may need to refresh the view. In the upper right corner, click the "..." button and select "Refresh Preview". You should see over 300 tests after adding spine4. 
+
+<img src=lab6-images/9.png border=1>
+
+<pre>
+Test Results Summary
+Summary Totals
+Total Tests	Total Tests Passed	Total Tests Failed
+321	                       321	                 0
 </pre>
