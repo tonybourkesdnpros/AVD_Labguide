@@ -60,8 +60,8 @@ Add the following to configure the interfaces that host2 is connected to.
   - name: host2
     adapters:
       - endpoint_ports: [ Ethernet1, Ethernet2 ]
-        switch_ports: [ Ethernet9, Ethernet9 ]
-        switches: [ leaf1, leaf2 ]
+        switch_ports: [ Ethernet7, Ethernet7 ]
+        switches: [ leaf3, leaf4 ]
         vlans: 20
         mode: access
         spanning_tree_portfast: edge
@@ -89,13 +89,13 @@ servers:
   - name: host2
     adapters:
       - endpoint_ports: [ Ethernet1, Ethernet2 ]
-        switch_ports: [ Ethernet9, Ethernet9 ]
-        switches: [ leaf1, leaf2 ]
+        switch_ports: [ Ethernet7, Ethernet7 ]
+        switches: [ leaf3, leaf4 ]
         vlans: 20
         mode: access
         spanning_tree_portfast: edge
         port_channel:
-          description: PortChannel host2
+          description: PortChannel host3
           mode: active
 </pre>
 
